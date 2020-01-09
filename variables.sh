@@ -27,6 +27,9 @@ time=$(date +%k)
     dir_config_duckdns="$dir_config/duckdns"
     dir_config_ombi="$dir_config/ombi"
     dir_config_transmission="$dir_config/transmission"
+    dir_config_adguard="$dir_config/adguard"
+    dir_adguard_data="$dir_config_adguard/data"
+    dir_adguard_config="$dir_config_adguard/config"
 
   # Files related variables.
   file_config="$dir_script/.config.json"

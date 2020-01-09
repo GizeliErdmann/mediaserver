@@ -8,7 +8,7 @@ function install_config {
   if [ ! -e "$file_config" ];
   then
     echo -e "${color_yellow}Creating config file...${color_reset}"
-    echo '{ "branch": "", "rclone": "", "crontab": "", "mediamanager": "" }' > $file_config
+    echo '{ "branch": "", "rclone": "", "crontab": "", "mediamanager": "", "adguard": "" }' > $file_config
     # User input.
     while true; do
         read -p "$(echo -e "${color_blue}Enable Media Manager? (Yy/Nn): ${color_reset}")" yn
@@ -34,13 +34,23 @@ function install_config {
             * ) echo -e "${color_red}You need to answer yes or no.${color_reset}";;
         esac
     done
+    while true; do
+        read -p "$(echo -e "${color_blue}Enable AdGuard Home? (Yy/Nn): ${color_reset}")" yn
+        case $yn in
+            [Yy]* ) ask_adguardhome="enabled"; break;;
+            [Nn]* ) ask_adguardhome="disabled"; break;;
+            * ) echo -e "${color_red}You need to answer yes or no.${color_reset}";;
+        esac
+    done
     # Reads user's input into the config file.
     jq '."branch" = ""' $file_config | sponge $file_config
     jq '."mediamanager" = "'$ask_mediamanager'"' $file_config | sponge $file_config
     jq '."plexserver" = "'$ask_plexserver'"' $file_config | sponge $file_config
     jq '."motioneye" = "'$ask_motioneye'"' $file_config | sponge $file_config
+    jq '."motioneye" = "'$ask_adguardhome'"' $file_config | sponge $file_config
     jq '."rclone" = "install"' $file_config | sponge $file_config
     jq '."crontab" = "wipe"' $file_config | sponge $file_config
+
   elif [ -e "$file_config" ];
   then
     echo -e "${color_yellow}Removing existing config file...${color_reset}"
@@ -107,6 +117,19 @@ function install_directories {
     mkdir "$dir_config_plex"
     mkdir "$dir_config_duckdns"
     mkdir "$dir_plex_transcode"
+  fi
+  if [ "$jsonstatus_adguard" == "enabled" ];
+  then
+    if [ ! -d "$dir_config" ];
+    then
+      mkdir "$dir_config"
+    fi
+    if [ ! -d "$dir_config_adguard" ];
+    then
+      mkdir "$dir_config_adguard"
+      mkdir "$dir_adguard_data"
+      mkdir "$dir_adguard_config"
+    fi
   fi
   chgrp -R 1000 "$dir_remote"
   chgrp -R 1000 "$dir_local"
@@ -476,6 +499,28 @@ EOF
     sudo docker start motioneye
     echo -e "${color_green}Done installing MotionEye.${color_reset}"
   fi
+  # Installs services for AdGuard Home.
+  if [ "$jsonstatus_adguard" == "enabled" ];
+  then
+    echo -e "${color_yellow}Installing AdGuard Home...${color_reset}"
+    sudo docker pull adguard/adguardhome
+    sudo docker run --name adguardhome \
+    -v $dir_adguard_data:/opt/adguardhome/work \
+    -v $dir_adguard_config:/opt/adguardhome/conf \
+    -p 53:53/tcp \
+    -p 53:53/udp \
+    -p 67:67/udp \
+    -p 68:68/tcp \
+    -p 68:68/udp \
+    -p 80:80/tcp \
+    -p 443:443/tcp \
+    -p 853:853/tcp \
+    -p 3000:3000/tcp \
+    -d adguard/adguardhome
+    jq '."adguard" = "installed"' $file_config | sponge $file_config
+    sudo docker start adguardhome
+    echo -e "${color_green}Done installing AdGuard Home.${color_reset}"
+  fi
 }
 
 function install_crontab {
@@ -583,6 +628,10 @@ function start_services {
   then
     sudo docker restart motioneye
   fi
+  if [ "$jsonstatus_adguard" == "installed" ];
+  then
+    sudo docker restart adguardhome
+  fi
   if [ "$jsonstatus_mediamanager" == "enabled" ];
   then
     sudo docker restart sonarr
@@ -619,6 +668,10 @@ function stop_services {
   if [ "$jsonstatus_motioneye" == "enabled" ];
   then
     sudo docker stop motioneye
+  fi
+  if [ "$jsonstatus_adguard" == "installed" ];
+  then
+    sudo docker stop adguardhome
   fi
   if [ "$jsonstatus_mediamanager" == "enabled" ];
   then
@@ -715,6 +768,10 @@ function uninstall {
   then
     sudo docker stop plex
     sudo docker stop duckdns
+  fi
+  if [ "$jsonstatus_adguard" == "installed" ];
+  then
+    sudo docker stop adguardhome
   fi
   if [ "$jsonstatus_mediamanager" == "enabled" ];
   then
