@@ -77,6 +77,7 @@ function install_directories {
 # Function variables.
   jsonstatus_mediamanager=($(jq -r ".mediamanager" $file_config))
   jsonstatus_plexserver=($(jq -r ".plexserver" $file_config))
+  jsonstatus_adguard=($(jq -r ".adguard" $file_config))
 # Function Conditions.
   # Creates samba share point root.
   if [ "$jsonstatus_mediamanager" == "enabled" ];
@@ -181,6 +182,7 @@ function install_dependencies {
   jsonstatus_plexserver=($(jq -r ".plexserver" $file_config))
   jsonstatus_motioneye=($(jq -r ".motioneye" $file_config))
   jsonstatus_rclone=($(jq -r ".rclone" $file_config))
+  jsonstatus_adguard=($(jq -r ".adguard" $file_config))
   ask_mediamanager_rclonetoken=""
   ask_mediamanager_rclonedrive=""
   ask_mediamanager_rclonepass=""
@@ -616,6 +618,7 @@ function start_services {
   jsonstatus_mediamanager=($(jq -r ".mediamanager" $file_config))
   jsonstatus_plexserver=($(jq -r ".plexserver" $file_config))
   jsonstatus_motioneye=($(jq -r ".motioneye" $file_config))
+  jsonstatus_adguard=($(jq -r ".adguard" $file_config))
   if [[ "$jsonstatus_mediamanager" == "enabled" && "$jsonstatus_plexserver" == "disable" ]] || [[ "$jsonstatus_mediamanager" == "enabled" && "$jsonstatus_plexserver" == "enabled" ]];
   then
     sudo systemctl start remote-write
@@ -657,6 +660,7 @@ function stop_services {
   jsonstatus_mediamanager=($(jq -r ".mediamanager" $file_config))
   jsonstatus_plexserver=($(jq -r ".plexserver" $file_config))
   jsonstatus_motioneye=($(jq -r ".motioneye" $file_config))
+  jsonstatus_adguard=($(jq -r ".adguard" $file_config))
   if [[ "$jsonstatus_mediamanager" == "enabled" && "$jsonstatus_plexserver" == "disable" ]] || [[ "$jsonstatus_mediamanager" == "enabled" && "$jsonstatus_plexserver" == "enabled" ]];
   then
     sudo systemctl stop remote-write
@@ -740,6 +744,7 @@ function update {
 function uninstall {
   jsonstatus_mediamanager=($(jq -r ".mediamanager" $file_config))
   jsonstatus_plexserver=($(jq -r ".plexserver" $file_config))
+  jsonstatus_adguard=($(jq -r ".adguard" $file_config))
   echo -e "${color_yellow}Backing up config folder.${color_reset}"
   zip -qq -r "$HOME/config-backup.zip" $dir_config
   echo -e "${color_green}Done backing up config folder. It will be available in your home directory.${color_reset}"
