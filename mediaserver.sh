@@ -529,13 +529,13 @@ EOF
     echo -e "${color_yellow}Installing AdGuard Home...${color_reset}"
     sudo docker pull adguard/adguardhome
     sudo docker run --name adguardhome \
-    -v $dir_adguard_data:/opt/adguardhome/work \
-    -v $dir_adguard_config:/opt/adguardhome/conf \
+    -v /home/server/mediaserver/config/adguard/data:/opt/adguardhome/work \
+    -v /home/server/mediaserver/config/adguard/config:/opt/adguardhome/conf \
     -p 53:53/tcp \
     -p 53:53/udp \
     -p 67:67/udp \
-    -p 68:68/tcp \
-    -p 68:68/udp \
+    -p 69:69/tcp \
+    -p 69:69/udp \
     -p 81:81/tcp \
     -p 444:444/tcp \
     -p 853:853/tcp \
