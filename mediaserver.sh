@@ -528,15 +528,17 @@ EOF
   then
     echo -e "${color_yellow}Installing AdGuard Home...${color_reset}"
     sudo docker pull adguard/adguardhome
-    sudo docker run --name adguardhome \
-    -v /home/server/mediaserver/config/adguard/data:/opt/adguardhome/work \
-    -v /home/server/mediaserver/config/adguard/config:/opt/adguardhome/conf \
+    sudo docker create \
+    --name adguardhome \
+    -v $dir_adguard_data:/opt/adguardhome/work \
+    -v $  dir_adguard_config:/opt/adguardhome/conf \
     -p 53:53/tcp \
     -p 53:53/udp \
     -p 67:67/udp \
     -p 81:81/tcp \
     -p 853:853/tcp \
     -p 3000:3000/tcp \
+    --restart unless-stopped \
     -d adguard/adguardhome
     jq '."adguard" = "installed"' $file_config | sponge $file_config
     sudo docker start adguardhome
