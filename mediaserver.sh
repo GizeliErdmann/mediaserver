@@ -37,8 +37,8 @@ function install_config {
     while true; do
         read -p "$(echo -e "${color_blue}Enable AdGuard Home? (Yy/Nn): ${color_reset}")" yn
         case $yn in
-            [Yy]* ) ask_adguardhome="enabled"; break;;
-            [Nn]* ) ask_adguardhome="disabled"; break;;
+            [Yy]* ) ask_adguard="enabled"; break;;
+            [Nn]* ) ask_adguard="disabled"; break;;
             * ) echo -e "${color_red}You need to answer yes or no.${color_reset}";;
         esac
     done
@@ -47,7 +47,7 @@ function install_config {
     jq '."mediamanager" = "'$ask_mediamanager'"' $file_config | sponge $file_config
     jq '."plexserver" = "'$ask_plexserver'"' $file_config | sponge $file_config
     jq '."motioneye" = "'$ask_motioneye'"' $file_config | sponge $file_config
-    jq '."motioneye" = "'$ask_adguardhome'"' $file_config | sponge $file_config
+    jq '."adguard" = "'$ask_adguard'"' $file_config | sponge $file_config
     jq '."rclone" = "install"' $file_config | sponge $file_config
     jq '."crontab" = "wipe"' $file_config | sponge $file_config
 
