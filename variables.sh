@@ -30,6 +30,7 @@ time=$(date +%k)
     dir_config_adguard="$dir_config/adguard"
     dir_adguard_data="$dir_config_adguard/data"
     dir_adguard_config="$dir_config_adguard/config"
+    dir_config_heimdall="$dir_config/heimdall"
 
   # Files related variables.
   file_config="$dir_script/.config.json"
