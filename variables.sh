@@ -10,7 +10,7 @@ time=$(date +%k)
   dir_downloads="$dir_local/downloads"
   dir_watch="$dir_local/watch"
   dir_encoded="$dir_local/encoded"
-  dir_plex_googledrive="media_encrypt_cache:/plex"
+  dir_plex_googledrive="media_encrypt:/plex"
 
   dir_plex_transcode="$dir_local/transcode"
   dir_plex_movies="$dir_remote/movies"
