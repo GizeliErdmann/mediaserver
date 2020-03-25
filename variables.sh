@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#
 # GENERAL VARIABLES
 time=$(date +%k)
 
